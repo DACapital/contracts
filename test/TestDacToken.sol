@@ -4,6 +4,7 @@ import "truffle/Assert.sol";
 import "truffle/DeployedAddresses.sol";
 import "../contracts/DacToken.sol";
 
+// DAC Token is the zeppelin StandardToken.  This is just a sanity check.
 contract TestDacToken {
 
   function testInitialBalanceUsingDeployedContract() {

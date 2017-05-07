@@ -60,16 +60,19 @@ contract('DacToken', function(accounts) {
             assert.equal(balance.valueOf(), 21000000 * 10**18, "21 million tokens weren't in the first account");
 
             // Initiate a transfer to account 1
-            return tokenContract.transfer(accounts[1], 1000, {from: accounts[0]});
+            return tokenContract.transfer(accounts[1], 1 * 10**18, {from: accounts[0]});
         }).then(function(result) {
             // Get the balance of account 0
             return tokenContract.balanceOf.call(accounts[0]);
         }).then(function(balance) {
+            // Verify the from balance of account 0
+            assert.equal(balance.valueOf(), 20999999 * 10**18, "1 token should have been transferred from the account");
+
             // Get the balance of account 1
             return tokenContract.balanceOf.call(accounts[1]);
         }).then(function(balance) {
-            // Verify the balance
-            assert.equal(balance.valueOf(), 1000, "1000 tokens should have been transferred to the account");
+            // Verify the balance of account 1
+            assert.equal(balance.valueOf(), 1 * 10**18, "1 token should have been transferred to the account");
         });
     });
 });
