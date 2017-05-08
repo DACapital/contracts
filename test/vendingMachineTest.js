@@ -33,17 +33,17 @@ contract('VendingMachineInit', function(accounts) {
             // Get the AMOUNT_TO_SELL
             return vmContract.AMOUNT_TO_SELL.call();
         }).then(function(amount) {
-            assert.equal(amount.valueOf(), 21000000 * 10**18, "Should be selling 21 million");
+            assert.equal(amount.valueOf(), 16800000 * 10**18, "Should be selling 16.8 million");
 
             // Get the INITIAL_PRICE_PER_ETH
             return vmContract.INITIAL_PRICE_PER_ETH.call();
         }).then(function(amount) {
-            assert.equal(amount.valueOf(), 1000000, "Should be start at 1 million tokens per eth");
+            assert.equal(amount.valueOf(), 2000, "Should be start at 2 thousand tokens per eth");
 
             // Get the TOKENS_PER_GENERATION
             return vmContract.TOKENS_PER_GENERATION.call();
         }).then(function(amount) {
-            assert.equal(amount.valueOf(), 1200000 * 10**18, "Should be 1.2 million tokens per generation");
+            assert.equal(amount.valueOf(), 1680000 * 10**18, "Should be 1.68 million tokens per generation");
 
             // Success
             return true;
@@ -53,19 +53,19 @@ contract('VendingMachineInit', function(accounts) {
     // Validate intitial setup and token transfer to Vending Machine
     it("should have ownership transfer succeed", function() {
         // Now move all the tokens from account 0 to the vending machine
-        return tokenContract.transfer(vmContract.address, 21000000 * 10**18, {from: accounts[0]})
+        return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         .then(function(result) {            
             // Get the balance of the vending machine
             return tokenContract.balanceOf.call(vmContract.address);
         }).then(function(balance) {
             // Verify the vm owns it all
-            assert.equal(balance.valueOf(), 21000000 * 10**18, "Tokens should have been transferred to the vm");
+            assert.equal(balance.valueOf(), 16800000 * 10**18, "Tokens should have been transferred to the vm");
 
             // Get the balance of account 0
             return tokenContract.balanceOf.call(accounts[0]);
         }).then(function(balance) {
-            // Verify the original token owner doesn't own anything
-            assert.equal(balance.valueOf(), 0, "Tokens should have been transferred out");
+            // Verify the original token owner has 4.2m
+            assert.equal(balance.valueOf(), 4200000 * 10**18, "Tokens should have been transferred out");
 
             // Success
             return true;
@@ -86,14 +86,14 @@ contract('VendingMachineInit', function(accounts) {
     it("should purchase tokens with eth", function(done) {
         
         // Purchase 1 ether     
-        vmContract.purchaseTokens({from: accounts[0], value: 1 * 10**18 })
+        vmContract.purchaseTokens({from: accounts[3], value: 1 * 10**18 })
         .then(function(result) {            
             // Get the balance of account 3
-            return tokenContract.balanceOf.call(accounts[0]);
+            return tokenContract.balanceOf.call(accounts[3]);
         }).then(function(balance) {
             console.log(balance.valueOf());
-            // Verify 1 ETH purchased the first 1m tokens
-            assert.equal(balance.valueOf(), 1000000 * 10**18, "Tokens should have been transferred out");
+            // Verify 1 ETH purchased the first 2k tokens
+            assert.equal(balance.valueOf(), 2000 * 10**18, "Tokens should have been transferred out");
 
             // Success
             done();

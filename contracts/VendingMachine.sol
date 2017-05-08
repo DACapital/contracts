@@ -3,7 +3,7 @@ import "./zeppelin/ownership/Ownable.sol";
 import "./zeppelin/token/ERC20.sol";
 
 // Vending machine to sell X number of tokens for approx Y number of ETH.
-// As purchases are made, the owned ERC20 tokens will be sent out to purchaser.
+// As purchases are made, the owned ERC20 tokens will be assigned over to purchaser.
 // Purchases will be priced based on the purchase "Generation" the vending machine is in.
 // As more purchases are made the Generation gets incremented.
 // Each generation will sell the tokens for twice as much as the previous generation.
@@ -16,26 +16,23 @@ contract VendingMachine is Ownable {
     // The contract where the tokens are held by this contract until they are sold.
     ERC20 public token;
 
-    // Constants for defining supply
-    uint constant DECIMALS = 18;
-    uint constant ONE_MILLION = 10 ** 6;
-    uint constant ONE_HUNDRED_THOUSAND = 10 ** 5;
-    uint constant BASE_UNITS = 10 ** DECIMALS;    
+    // Base units of the token
+    uint constant BASE_UNITS = 10 ** 18;    
         
     // Total Amount of tokens to sell to purchasers
-    // Selling 21 million tokens,
-    uint constant public AMOUNT_TO_SELL = 21 * ONE_MILLION * BASE_UNITS;
+    // Selling 16.8 million tokens,
+    uint constant public AMOUNT_TO_SELL = 16800000 * BASE_UNITS;
 
     // Total amount of tokens that have been sold so far.  Starts at 0.
     uint public amountSold = 0;
 
     // Initial price that each ETH sent in will get back in tokens.
-    // Start at 1 million tokens per ETH
-    uint constant public INITIAL_PRICE_PER_ETH = 1 * ONE_MILLION ;
+    // Start at 2 thousand tokens per ETH
+    uint constant public INITIAL_PRICE_PER_ETH = 2000 ;
 
     // Amount of tokens to sell per generation
-    // 1.2 Million Tokens per generation
-    uint constant public TOKENS_PER_GENERATION = 12 * ONE_HUNDRED_THOUSAND * BASE_UNITS;
+    // 1.68 Million Tokens per generation
+    uint constant public TOKENS_PER_GENERATION = 1680000 * BASE_UNITS;
 
     // Constructor initalized with the token contract that it will be selling.
     function VendingMachine(ERC20 tokenContract){
