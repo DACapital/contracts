@@ -60,20 +60,19 @@ contract VendingMachine is Ownable {
         DebugString("amountLeftInCurrentGeneration: ");
         DebugUint(amountLeftInCurrentGeneration);
         // Calculate the price per ETH of the current generation
-        uint salePrice = INITIAL_PRICE_PER_ETH / 2 ** currentGeneration;        
-        DebugString("salePrice: ");
-        DebugUint(salePrice);
+        //uint salePrice = INITIAL_PRICE_PER_ETH / 2 ** currentGeneration;        
+        //DebugString("salePrice: ");
+        //DebugUint(salePrice);
         // Calculate how mant tokens they are trying to buy
-        currentAmountToSell = salePrice * ethAmount;
+        currentAmountToSell = (ethAmount * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration;
         DebugString("currentAmountToSell: ");
         DebugUint(currentAmountToSell);
-                
 
         // If they are buying past the current generation, then figure out how much they purchase in the next generation.
         if (currentAmountToSell > amountLeftInCurrentGeneration){
 
             // Calculate how much ETH would be used from the current generation
-            uint ethFromCurrentGen = salePrice * amountLeftInCurrentGeneration;
+            uint ethFromCurrentGen =  ((2 ** currentGeneration) * amountLeftInCurrentGeneration) / INITIAL_PRICE_PER_ETH;
             DebugString("ethFromCurrentGen: ");
             DebugUint(ethFromCurrentGen);
 
@@ -86,11 +85,11 @@ contract VendingMachine is Ownable {
             DebugString("leftOverEth: ");
             DebugUint(leftOverEth);
 
-            uint nextGen = calculateSaleAmount(nextGenStart, leftOverEth);
+            uint nextGen = this.calculateSaleAmount(nextGenStart, leftOverEth);
             DebugString("nextGen: ");
             DebugUint(nextGen);
 
-            return (ethFromCurrentGen * salePrice) + nextGen;
+            return ((ethFromCurrentGen * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration) + nextGen;
         }
         
         // Return the amount to sell
