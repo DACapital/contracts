@@ -491,7 +491,7 @@ contract('PartialGen1', function(accounts) {
         });
     });
 });
-/*
+
 contract('PartialGen8', function(accounts) {    
     let vmContract = null;
     let tokenContract = null;
@@ -515,38 +515,154 @@ contract('PartialGen8', function(accounts) {
             // Get the balance of account 3
             return tokenContract.balanceOf.call(accounts[3]);
         }).then(function(balance) {
-            // Verify 1 ETH purchased the the next 1k tokens
+            // Verify 100 ETH purchased
             assert.equal(balance.valueOf(), 200000 * 10**18 , "Gen1  Tokens should have been transferred out");
             
-            // Purchase from another account - all gen 7 + 12345 into gen 8            
-            return vmContract.purchaseTokens({from: accounts[4], value: 11883456 * 10**18 })
+            // Purchase from another account
+            return vmContract.purchaseTokens({from: accounts[4], value: 106680 * 10**18 })
         }).then(function(result) {            
             // Get the balance of account 3
             return tokenContract.balanceOf.call(accounts[4]);
         }).then(function(balance) {
             // Verify 1 ETH purchased the the next 1k tokens
-            assert.equal(balance.valueOf(), 13489000 * 10**18 , "Gen1 acct 4 Tokens should have been transferred out");
+            assert.equal(balance.valueOf(), 115615625 * 10**17 , "Gen1 acct 4 Tokens should have been transferred out");
 
             return true;
         });
     });
 });
-*/
 
 
-    // Send 100 then 2 gen worth
-    // Send 100 then 3 gen worth
-    // Send 100 then 4 gen worth
-    
-    // Send MAX -1
-    // Send MAX
-    // Send MAX + 1
-    
-    // Send MAX -1 then send 1
-    // Send MAX -1 then send 2
+contract('FullGen10 - 1', function(accounts) {    
+    let vmContract = null;
+    let tokenContract = null;
+
+    // Validate intitial properties set on contract    
+    it("Buy a the generation of coins", function() {        
+        
+        // Start by deploying the token
+        return DacToken.deployed().then(function(instance) {
+            // Save off the token contract instance
+            tokenContract = instance;            
+
+            // Create the new vending machine contract with the token contract in constructor
+            return VendingMachine.new(tokenContract.address, {from: accounts[1]});
+        }).then(function(instance) {
+            vmContract = instance;
+            return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
+        }) .then(function(result) {                        
+            return vmContract.purchaseTokens({from: accounts[3], value: 859319 * 10**18 })
+        }) .then(function(result) {            
+            // Get the balance of account 3
+            return tokenContract.balanceOf.call(accounts[3]);
+        }).then(function(balance) {
+            // Verify 1 ETH purchased the the next 1k tokens
+            assert.equal(balance.valueOf(), 1679999609375 * 10**13 , "Gen10 Tokens should have been transferred out");
+            return true;
+        })
+    })
+});
+
+
+contract('FullGen10 + 1', function(accounts) {    
+    let vmContract = null;
+    let tokenContract = null;
+
+    // Validate intitial properties set on contract    
+    it("Should fail buying over limit", function(done) {        
+        
+        // Start by deploying the token
+        DacToken.deployed().then(function(instance) {
+            // Save off the token contract instance
+            tokenContract = instance;            
+
+            // Create the new vending machine contract with the token contract in constructor
+            return VendingMachine.new(tokenContract.address, {from: accounts[1]});
+        }).then(function(instance) {
+            vmContract = instance;
+            return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
+        }) .then(function(result) {                        
+            return vmContract.purchaseTokens({from: accounts[3], value: 859321 * 10**18 })
+        }) .then(function(result) {            
+            done("Should have thrown error");
+        }).catch(function(error){
+            done();
+        });
+    })
+});
+
+contract('FullGen10 -1 then + 1', function(accounts) {    
+    let vmContract = null;
+    let tokenContract = null;
+
+    // Validate intitial properties set on contract    
+    it("Buy all the generations of coins", function() {        
+        
+        // Start by deploying the token
+        return DacToken.deployed().then(function(instance) {
+            // Save off the token contract instance
+            tokenContract = instance;            
+
+            // Create the new vending machine contract with the token contract in constructor
+            return VendingMachine.new(tokenContract.address, {from: accounts[1]});
+        }).then(function(instance) {
+            vmContract = instance;
+            return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
+        }) .then(function(result) {                        
+            return vmContract.purchaseTokens({from: accounts[3], value: 859319 * 10**18 })
+        }) .then(function(result) {            
+            // Get the balance of account 3
+            return tokenContract.balanceOf.call(accounts[3]);
+        }).then(function(balance) {
+            // Verify almost all tokens purchased
+            assert.equal(balance.valueOf(), 1679999609375 * 10**13 , "Gen10 - 1  Tokens should have been transferred out");
+            
+            // Purchase from another account
+            return vmContract.purchaseTokens({from: accounts[3], value: 1 * 10**18 })
+        }).then(function(result) {            
+            // Get the balance of account 3
+            return tokenContract.balanceOf.call(accounts[3]);
+        }).then(function(balance) {
+            // Verify all tokens purchased the the next 1k tokens
+            assert.equal(balance.valueOf(), 16800000 * 10**18 , "Gen1 acct 4 Tokens should have been transferred out");
+
+            return true;
+        });
+    });
+
+    it("should fail if trying to withdraw 0", function(done) {        
+        vmContract.withdrawEth(0, {from: accounts[1]})
+        .then(function(result) {
+            done("Should have thrown error");
+        }).catch(function(error){
+            done();
+        });
+    });
+
+    it("fail withdraw with wrong account", function(done) {        
+        vmContract.withdrawEth(1, {from: accounts[0]})
+        .then(function(result) {
+            done("Should have thrown error");
+        }).catch(function(error){
+            done();
+        });
+    });
+
+    it("Allow withdraw", function() {        
+        let initialBalance = web3.eth.getBalance(accounts[1]);
+
+        return vmContract.withdrawEth(10 * 10**18, {from: accounts[1]})
+        .then(function(result) {
+            let expectedBalance = initialBalance.plus(10 * 10**18);
+            console.log((10 * 10**18) + (10 * 10**18));
+            assert.equal(web3.eth.getBalance(accounts[1]).valueOf(), expectedBalance.valueOf(), 'Should have withdrawn 10');
+        });
+    });
+});
+
+
 
     // Try to withdraw 0
     // Try to withdraw 10
     // Try to withdraw more than is in the contract
     // Try to withdraw from invalid account
-

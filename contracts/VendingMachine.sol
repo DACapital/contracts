@@ -125,6 +125,12 @@ contract VendingMachine is Ownable {
 
     // This function allows the owner to withdraw any ETH that was sent in via purchases.
     function withdrawEth(uint amount) onlyOwner {
+
+        // Verify they are requesting a valid amount
+        if(amount <= 0){
+            throw;
+        }
+
         // Send out what they are requesting to withdraw and trigger the send
         if(!msg.sender.send(amount)){
             throw;
