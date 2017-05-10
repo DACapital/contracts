@@ -2,29 +2,28 @@ pragma solidity ^0.4.4;
 import "./zeppelin/ownership/Ownable.sol";
 import "./zeppelin/token/ERC20.sol";
 
-// Vending machine to sell X number of tokens for approx Y number of ETH.
+// Vending machine to sell X number of tokens for Y number of ETH.
 // As purchases are made, the owned ERC20 tokens will be assigned over to purchaser.
 // Purchases will be priced based on the purchase "Generation" the vending machine is in.
 // As more purchases are made the Generation gets incremented.
 // Each generation will sell the tokens for twice as much as the previous generation.
 contract VendingMachine is Ownable {
 
-    // For debugging in dev
-    event DebugString(string message);
-    event DebugUint(uint value);
-
     // The contract where the tokens are held by this contract until they are sold.
     ERC20 public token;
+    
+    // Total amount of tokens that have been sold so far.  Starts at 0.
+    uint public amountSold = 0;
+
+    // Block to start selling tokens
+    uint public startBlock;
 
     // Base units of the token
-    uint constant BASE_UNITS = 10 ** 18;    
+    uint constant BASE_UNITS = 10 ** 18;        
         
     // Total Amount of tokens to sell to purchasers
     // Selling 16.8 million tokens,
-    uint constant public AMOUNT_TO_SELL = 16800000 * BASE_UNITS;
-
-    // Total amount of tokens that have been sold so far.  Starts at 0.
-    uint public amountSold = 0;
+    uint constant public AMOUNT_TO_SELL = 16800000 * BASE_UNITS;    
 
     // Initial price that each ETH sent in will get back in tokens.
     // Start at 2 thousand tokens per ETH
@@ -35,61 +34,45 @@ contract VendingMachine is Ownable {
     uint constant public TOKENS_PER_GENERATION = 1680000 * BASE_UNITS;
 
     // Constructor initalized with the token contract that it will be selling.
-    function VendingMachine(ERC20 tokenContract){
+    function VendingMachine(ERC20 tokenContract, uint start){
         token = tokenContract;
+        startBlock = start;
     }
 
     // This function will calculate how many tokens they will get with the amount of ETH they are sending in
     function calculateSaleAmount(uint amountSoldStart, uint ethAmount) returns (uint) {
-        DebugString("Calculating amount.");
-        DebugString("amountSoldStart: ");
-        DebugUint(amountSoldStart);
-        DebugString("ethAmount: ");
-        DebugUint(ethAmount);
-
-        
 
         // Keep track of the amount to sell in this transaction
         uint currentAmountToSell = 0;
 
         // First get the amount of tokens sold from the beginning of this generation and the amount left.
-        uint currentGeneration = amountSoldStart / TOKENS_PER_GENERATION;
-        DebugString("currentGeneration: ");
-        DebugUint(currentGeneration);
+        uint currentGeneration = amountSoldStart / TOKENS_PER_GENERATION;        
         uint amountLeftInCurrentGeneration = TOKENS_PER_GENERATION - (amountSoldStart % TOKENS_PER_GENERATION);
-        DebugString("amountLeftInCurrentGeneration: ");
-        DebugUint(amountLeftInCurrentGeneration);
-        // Calculate the price per ETH of the current generation
-        //uint salePrice = INITIAL_PRICE_PER_ETH / 2 ** currentGeneration;        
-        //DebugString("salePrice: ");
-        //DebugUint(salePrice);
-        // Calculate how mant tokens they are trying to buy
-        currentAmountToSell = (ethAmount * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration;
-        DebugString("currentAmountToSell: ");
-        DebugUint(currentAmountToSell);
+
+        // NOTE: The salePrice = (INITIAL_PRICE_PER_ETH / 2 ** currentGeneration).  Anywhere you see weird math related to this,
+        // assume that it is being done to deal with the fact that later generations have a fractional price (which solidity can't handle yet).
+        // When/If this is added, this can be simplified.  Until then you will see the salePrice deconstructed in the calculations.
+
+        // Calculate how mant tokens they are trying to buy        
+        currentAmountToSell = (ethAmount * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration; // => ethAmount * salePrice
 
         // If they are buying past the current generation, then figure out how much they purchase in the next generation.
         if (currentAmountToSell > amountLeftInCurrentGeneration){
 
             // Calculate how much ETH would be used from the current generation
-            uint ethFromCurrentGen =  ((2 ** currentGeneration) * amountLeftInCurrentGeneration) / INITIAL_PRICE_PER_ETH;
-            DebugString("ethFromCurrentGen: ");
-            DebugUint(ethFromCurrentGen);
+            uint ethFromCurrentGen =  ((2 ** currentGeneration) * amountLeftInCurrentGeneration) / INITIAL_PRICE_PER_ETH; // => amountLeftInCurrentGeneration / salePrice
+
+            // Token number to start with in the next generation
+            uint nextGenStart = (currentGeneration + 1) * TOKENS_PER_GENERATION;            
+
+            // Eth available to purchase in the next generation
+            uint leftOverEth = ethAmount - ethFromCurrentGen;
 
             // Recursively call this function with the starting amount being the next gen and remaining ETH
-            uint nextGenStart = (currentGeneration + 1) * TOKENS_PER_GENERATION;
-            DebugString("nextGenStart: ");
-            DebugUint(nextGenStart);
-            
-            uint leftOverEth = ethAmount - ethFromCurrentGen;
-            DebugString("leftOverEth: ");
-            DebugUint(leftOverEth);
-
             uint nextGen = this.calculateSaleAmount(nextGenStart, leftOverEth);
-            DebugString("nextGen: ");
-            DebugUint(nextGen);
 
-            return ((ethFromCurrentGen * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration) + nextGen;
+            // Return the current tokens sold in this generation plus any later generations.
+            return ((ethFromCurrentGen * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration) + nextGen; // => (ethFromCurrentGen * salePrice) + nextGen
         }
         
         // Return the amount to sell
@@ -99,7 +82,11 @@ contract VendingMachine is Ownable {
     // When this function is called, it will send the originator X tokens.  
     // X is determined by the price calculated based on the current generation of sales.
     function purchaseTokens() payable{
-        DebugString("Test.");
+
+        // Verify the token sale has started
+        if(block.number < startBlock){
+            throw;
+        }
 
         // Verify some ETH was sent in
         if(msg.value == 0){
