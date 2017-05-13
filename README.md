@@ -24,3 +24,6 @@ Tests can be run with:
 npm run test
 ```
 
+# Development
+- If you use vim as an editor, install the [vim-solidity plugin](https://github.com/tomlion/vim-solidity)
+
