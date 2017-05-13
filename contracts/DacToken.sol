@@ -1,4 +1,4 @@
-pragma solidity ^0.4.4;
+pragma solidity ^0.4.8;
 import "./zeppelin/token/StandardToken.sol";
 
 // The DAC Token is a standard ERC20 token with 21 million units and 18 decimal places.
