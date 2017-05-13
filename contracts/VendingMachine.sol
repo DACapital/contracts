@@ -105,9 +105,8 @@ contract VendingMachine is Ownable {
         amountSold += amountPurchased;
 
         // Send the tokens to the buyers's account
-        if(!token.transfer(msg.sender, amountPurchased)){
-            throw;
-        }
+        token.transfer(msg.sender, amountPurchased);
+
     }
 
     // This function allows the owner to withdraw any ETH that was sent in via purchases.

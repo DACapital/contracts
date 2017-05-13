@@ -8,17 +8,28 @@ import "./zeppelin/ownership/Ownable.sol";
 contract DacHub is Ownable{
 
     // Key/Value pairs of all the contracts on the platform
-    mapping (string => address) public platformContracts;
+    mapping (string => address) platformContracts;
 
     // Initialize the hub
     function DacHub(){
     }
 
+    // Get one of the platform addresses
+    function GetPlatformContract(string key) returns (address platformContract) {
+
+        // Do some sanity checks on the key
+        if( bytes(key).length == 0 ) {
+            throw;
+        }
+
+        return platformContracts[key];
+    }
+
     // Update one of the platform addresses in the system
     function UpdatePlatformContract(string key, address value) onlyOwner {
-        
+
         // Do some sanity checks on the key
-        if( !key ) {
+        if( bytes(key).length == 0 ) {
             throw;
         }
 
@@ -30,6 +41,5 @@ contract DacHub is Ownable{
         // Update the contract
         platformContracts[key] = value;
     }
-
-
+    
 }   
