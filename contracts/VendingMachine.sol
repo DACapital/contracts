@@ -69,7 +69,7 @@ contract VendingMachine is Ownable {
             uint leftOverEth = ethAmount - ethFromCurrentGen;
 
             // Recursively call this function with the starting amount being the next gen and remaining ETH
-            uint nextGen = this.calculateSaleAmount(nextGenStart, leftOverEth);
+            uint nextGen = calculateSaleAmount(nextGenStart, leftOverEth);
 
             // Return the current tokens sold in this generation plus any later generations.
             return ((ethFromCurrentGen * INITIAL_PRICE_PER_ETH) / 2 ** currentGeneration) + nextGen; // => (ethFromCurrentGen * salePrice) + nextGen
