@@ -7,8 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "start-rpc": "bash ./runTestRpc.sh",
-    "test": "truffle test"
+    "test": "bash ./runTestRpc.sh"
   },
   "repository": {
     "type": "git",
