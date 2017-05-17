@@ -10,8 +10,6 @@ import "./zeppelin/token/ERC20.sol";
 // At the end of the voting period, a tally can be called to finalize the votes.
 // A minimum number of votes (threshold) must be made in order for the vote to finalize to a "true" outcome.
 contract ProposalVote {
-    
-    event Debug(uint debugText);
 
     // The token contract to determine how much each vote weighs
     ERC20 public tokenContract;
@@ -25,25 +23,24 @@ contract ProposalVote {
 	uint public threshold;	
 
     // Time voting is active
- 	uint public votingStarts;
-	uint public votingEnds;
+ 	uint public votingStartsBlock;
+	uint public votingEndsBlock;
 
 	// The contract will be created with an initial list of addresses and balances from an ERC20 token.
 	// Voting will only be valid for a period of time from when this contract is created.
-	function ProposalVote(ERC20 _tokenContract, uint _votingEnds, uint _threshold) {
-        Debug(block.number);
+	function ProposalVote(ERC20 _tokenContract, uint _votingEndsBlock, uint _threshold) {
 
 		// Save off the token
 		tokenContract = _tokenContract;
 
 		// Save off the start time of the voting for information only.
-		votingStarts = block.number;
+		votingStartsBlock = block.number;
 
 		// Calculate when the vote period ends
-		votingEnds = _votingEnds;
+		votingEndsBlock = _votingEndsBlock;
 
         // Sanity check to make sure the end date is in the future
-        if(votingEnds <= votingStarts){
+        if(votingEndsBlock <= votingStartsBlock){
             throw;
         }
 
@@ -56,7 +53,7 @@ contract ProposalVote {
 	function CastVote(bool votingYes){
         
 		// Ensure we are in a valid voting window
-		if( block.number >= votingEnds ){
+		if( block.number >= votingEndsBlock ){
 			throw;
 		}
 
@@ -86,10 +83,9 @@ contract ProposalVote {
 
 
 	function GetOutcome() returns (bool) {
-        Debug(block.number);
 
 		// Ensure the voting period has ended
-		if ( block.number <= votingEnds ){
+		if ( block.number <= votingEndsBlock ){
 			throw;
 		}
 
