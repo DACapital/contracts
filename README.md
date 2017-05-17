@@ -49,9 +49,9 @@ The total number of tokens created will be a fixed 21 million tokens.  The token
 20% of the DAC Tokens will be allocated to the creators and maintainers of the platform with the rest being sold through the Vending Machine.
 
 ### Vending Machine Contract
-The Vending Machine Contract will be used to disperse DAC Tokens to anyone who would like to purchase them to use on the platform.  It is set up to sell 80% of all DAC Tokens.  To purchase tokens any user can send ETH to the specified function in the contract and automatically recieve a calculated amount of DAC in return.  DAC tokens will be transferred to the originating address of the purchase, so no ETH should be sent directly from exchanges, but instead it should be sent from a wallet that is owned by the user.
+The Vending Machine Contract will be used to dispense DAC Tokens to anyone who would like to aquire them to use on the platform.  It is set up to dispense 80% of all DAC Tokens.  To aquire tokens any user can send ETH to the specified function in the contract and automatically recieve a calculated amount of DAC in return.  DAC tokens will be transferred to the originating address of the transaction, so no ETH should be sent directly from exchanges, but instead it should be sent from a wallet that is owned by the user.
 
-The Vending Machine is set up to sell the tokens in a series of 10 Generations.  Each generation will have a price that is double the preceding generation, with the initial price starting at 2,000 DAC Tokens per ETH.  Each generation will 1.68 million DAC Tokens, totaling 16.8 million DAC Tokens which is 80% of all the available supply of 21 million tokens.
+The Vending Machine is set up to dispense the tokens in a series of 10 Generations.  Each generation will have a price that is double the preceding generation, with the initial price starting at 2,000 DAC Tokens per ETH.  Each generation will dispense 1.68 million DAC Tokens, totaling 16.8 million DAC Tokens which is 80% of all the available supply of 21 million tokens.
 
 <p align="center">
   <img src="https://github.com/DACapital/contracts/blob/master/doc/vending_machine.png?raw=true" alt="DA Capital Contracts"/>
