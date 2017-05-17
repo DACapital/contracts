@@ -26,3 +26,7 @@ npm run test
 
 #### Note that the DA.Capital platform is a work in progress.  All docs/code is in flux until TBD.
 
+The DA.Capital platform is modeled after a "Hub and Spoke" design, where the hub contract is the source of truth for references to all other contracts.  Any time a contract needs to interact with another contract or library, it will pull the reference address from the Hub.  This should allow the platform to evolve over time with contracts being updated and the addresses stored in the hub updated to the new versions.
+
+![DAC Contracts](/doc/DAC_Contracts.png)
+
