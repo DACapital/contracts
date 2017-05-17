@@ -13,11 +13,6 @@ npm i -g truffle
 npm i -g ethereumjs-testrpc
 ```
 
-Then run the rpc server:
-```
-npm run start-rpc
-```
-
 # Testing
 Tests can be run with:
 ```
@@ -26,4 +21,8 @@ npm run test
 
 # Development
 - If you use vim as an editor, install the [vim-solidity plugin](https://github.com/tomlion/vim-solidity)
+
+# Contracts
+
+#### Note that the DA.Capital platform is a work in progress.  All docs/code is in flux until TBD.
 
