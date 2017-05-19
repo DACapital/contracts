@@ -58,16 +58,30 @@ The Vending Machine is set up to dispense the tokens in a series of 10 Generatio
 </p>
 
 ### Proposal Manager Contract
-TBD
+The Proposal Manager Contract will be responsible for handling any new proposal creations and executing the logic when a proposal vote is completed.
 
 ### Proposal Contract
-TBD
+The Proposal Contract will be used to track voting for any proposals that are submitted on the system.  The voting logic and tracking will be held inside of proposals and will follow a strategy similar to the [Colony](https://blog.colony.io/towards-better-ethereum-voting-protocols-7e54cb5a0119) proposal to have a 2 phase voting system.
+
+In the first phase of a vote, the "Commit" phase, a user will submit a hashed vote to the proposal during the voting period.  It will be a hash of their vote of accept or reject the proposal and a random nonce.
+
+This vote will then be tracked for their account.  While any active votes are tracked via a commit for an account, the tokens in their account are non-transferrable and are considered "locked".  During the active commit phase, a user can withraw their votes to unlock their tokens to be able to transfer to another account.
+
+Once the commit phase has ended, a reveal phase will be started.  During this phase, the account's tokens are locked until they reveal their vote.  To reveal their vote, they send in the original vote that matches to their hash they sent in.  If the hash matches the original commit vote, then the votes are added to the tally and the account is unlocked to allow transfers of tokens to other accounts.
+
+If a user loses their original vote and is unable to reveal their commit vote, they will not be able to transfer tokens until the reveal phase has ended.
+
+All votes will be weighted to the amount of DAC tokens that are held by that account.
 
 ### Fee Tracker Contract
-TBD
+The Fee Tracker Contract will be used to hold the list of fees required to interact on the platform.  It will be a simple key/value pair record for fee lookups from other contracts.
+
+The fee list can be updated through an "Update Fee Proposal".
 
 ### Fund Contract
-TBD
+The Fund Contract will be responsible for holding all assets tokens in an individual fund.  Once a Fund Proposal has been created, a fund contract will be created.  Each fund will act as a separate ERC20 token with 1 million tracking tokens for that fund.  The fund creator who creates the fund proposal will be the initial owner of all tracking tokens.
+
+When a fund is in a pending state, the tracking tokens will not be transferrable.  Once the fund moves into an active state, the tracking tokens will become transferrable and the fund owner can sell/trade the tracking tokens.  Once the fund is moved into the closed state, the tracking tokens will not be transferrable and can be redeemed for a share of the underlying asset tokens.
 
 ### Auction Contract
-TBD
+The Auction Contract will be responsible for rebalancing the tokens held within a fund.  Once a rebalance proposal is created and approved, this contract will have the ability to start an auction to sell tokens from a fund in exchange for a bidder sending in another type of asset token.  The auction will allow market makers to compete to provide liquidity to the funds.
