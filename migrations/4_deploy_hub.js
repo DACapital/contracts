@@ -1,5 +1,5 @@
 var DacHub = artifacts.require("./DacHub.sol");
 
 module.exports = function(deployer) {  
-    deployer.deploy(DacHub);
+    return deployer.deploy(DacHub);
 };
