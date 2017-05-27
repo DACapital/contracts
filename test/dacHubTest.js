@@ -10,23 +10,23 @@ contract('DacHub', function(accounts) {
             hubContract = instance;
 
             // Get non-existant
-            return hubContract.GetPlatformContract.call('does_not_exist');
+            return hubContract.getPlatformContract.call('does_not_exist');
         }).then(function(contractAddress) {
             assert.equal(contractAddress, 0, "Should return 0 for unknown address");
 
             // Set to known account
-            return hubContract.UpdatePlatformContract('master', accounts[2], {from: accounts[0]});
+            return hubContract.updatePlatformContract('master', accounts[2], {from: accounts[0]});
         }).then(function(result) {
             // Get the set account
-            return hubContract.GetPlatformContract.call('master');
+            return hubContract.getPlatformContract.call('master');
         }).then(function(contractAddress) {
             assert.equal(contractAddress, accounts[2], "Should be set");
 
             // Update to new account
-            return hubContract.UpdatePlatformContract('master', accounts[3], {from: accounts[0]});
+            return hubContract.updatePlatformContract('master', accounts[3], {from: accounts[0]});
         }).then(function(result) {
             // Get the set account
-            return hubContract.GetPlatformContract.call('master');
+            return hubContract.getPlatformContract.call('master');
         }).then(function(contractAddress) {
             assert.equal(contractAddress, accounts[3], "Should be updated   ");
         })

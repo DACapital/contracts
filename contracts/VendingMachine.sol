@@ -1,16 +1,14 @@
 pragma solidity ^0.4.8;
-import "./zeppelin/ownership/Ownable.sol";
 import "./zeppelin/token/ERC20.sol";
+import "./DacHub.sol";
+import './DacHubClient.sol';
 
 // Vending machine to sell X number of tokens for Y number of ETH.
 // As purchases are made, the owned ERC20 tokens will be assigned over to purchaser.
 // Purchases will be priced based on the purchase "Generation" the vending machine is in.
 // As more purchases are made the Generation gets incremented.
 // Each generation will sell the tokens for twice as much as the previous generation.
-contract VendingMachine is Ownable {
-
-    // The contract where the tokens are held by this contract until they are sold.
-    ERC20 public token;
+contract VendingMachine is DacHubClient {
     
     // Total amount of tokens that have been sold so far.  Starts at 0.
     uint public amountSold = 0;
@@ -34,8 +32,11 @@ contract VendingMachine is Ownable {
     uint constant public TOKENS_PER_GENERATION = 1680000 * BASE_UNITS;
 
     // Constructor initalized with the token contract that it will be selling.
-    function VendingMachine(ERC20 tokenContract, uint start){
-        token = tokenContract;
+    function VendingMachine(DacHub _dacHub, uint start){
+        // Save off the hub
+        dacHub = _dacHub;   
+
+        // Save off the start block
         startBlock = start;
     }
 
@@ -104,13 +105,22 @@ contract VendingMachine is Ownable {
         // Update the total amount sold
         amountSold += amountPurchased;
 
+        // Get the token address from the hub
+        ERC20 token = ERC20(getHubContractAddress(DAC_TOKEN));
+
         // Send the tokens to the buyers's account
         token.transfer(msg.sender, amountPurchased);
 
     }
 
     // This function allows the owner to withdraw any ETH that was sent in via purchases.
-    function withdrawEth(uint amount) onlyOwner {
+    function withdrawEth(uint amount) {
+
+        // Get the DAC owner wallet.  This should be the only address that is allowed to withdraw
+        address owner = getHubContractAddress(DAC_OWNER);
+        if (msg.sender != owner) {
+            throw;
+        }        
 
         // Verify they are requesting a valid amount
         if(amount <= 0){
