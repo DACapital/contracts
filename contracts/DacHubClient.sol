@@ -21,4 +21,8 @@ contract DacHubClient{
     function getHubContractAddress(string key) returns (address platformContract){
         return dacHub.getPlatformContract(key);
     }
+
+    function updatePlatformContract(string key, address platformContract){
+        return dacHub.updatePlatformContract(key, platformContract);
+    }
 }

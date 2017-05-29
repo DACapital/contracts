@@ -9,8 +9,8 @@ contract FeeTracker{
     // Initialize the fees
     function FeeTracker(){
 
-        // One DAC token required to create a proposal
-        feeList["CREATE_PROPOSAL_FEE"] = 1 * 10**18;
+        // One hundred DAC token required to create a proposal
+        feeList["CREATE_PROPOSAL_FEE"] = 100 * 10**18;
     }
 
     // Get one of the platform addresses
