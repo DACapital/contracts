@@ -19,7 +19,7 @@ contract('Block Start', function(accounts) {
             return vmContract.purchaseTokens({from: accounts[1], value: 1000})
         }).then(function(result) {                        
             done("Should have thrown error");
-        }).catch(function(error){       
+        }).catch(function(error){    
             done();
         });
     });

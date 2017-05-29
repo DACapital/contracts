@@ -15,7 +15,7 @@ contract DacHub is Ownable{
     }
 
     // Get one of the platform addresses
-    function GetPlatformContract(string key) returns (address platformContract) {
+    function getPlatformContract(string key) returns (address platformContract) {
 
         // Do some sanity checks on the key
         if( bytes(key).length == 0 ) {
@@ -26,7 +26,7 @@ contract DacHub is Ownable{
     }
 
     // Update one of the platform addresses in the system
-    function UpdatePlatformContract(string key, address value) onlyOwner {
+    function updatePlatformContract(string key, address value) onlyOwner {
 
         // Do some sanity checks on the key
         if( bytes(key).length == 0 ) {

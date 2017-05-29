@@ -1,29 +1,43 @@
 var VendingMachine = artifacts.require("./VendingMachine.sol");
 var DacToken = artifacts.require("./DacToken.sol");
+var AlwaysTransfer = artifacts.require("./AlwaysTransfer.sol");
+var DacHub = artifacts.require("./DacHub.sol");
 
 
 contract('VendingMachineInit', function(accounts) {    
     let vmContract = null;
+    let alwaysTransferContract = null;
+    let hubContract = null;
     let tokenContract = null;
 
     // Validate intitial properties set on contract    
     it("should have constant values defined", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return AlwaysTransfer.new()
+        .then((alwaysTransfer) => {
+            alwaysTransferContract = alwaysTransfer;
+
+            return DacHub.deployed();
+        }).then((instance) => {
+            hubContract = instance;
+
+            return hubContract.updatePlatformContract('DAC_TRANSFER_REGULATOR', alwaysTransferContract.address, {from: accounts[0]});        
+        }).then((result) => {
+            return DacToken.deployed();
+        }).then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
+            
+            return hubContract.updatePlatformContract('DAC_TOKEN', tokenContract.address, {from: accounts[0]});        
+        }).then((result) => {
+            return hubContract.updatePlatformContract('DAC_OWNER', accounts[0], {from: accounts[0]});        
+        }).then((result) => {
+            // Create the new vending machine contract with the hub contract in constructor
+            return VendingMachine.new(hubContract.address, 0, {from: accounts[1]});
         }).then(function(instance) {
             // Save off the vending machine contract
             vmContract = instance;
-
-            // Get the token
-            return vmContract.token.call();     
-        }).then(function(token) {
-            assert.equal(token, tokenContract.address, "Token contract should be set");
 
             // Get the current amount sold
             return vmContract.amountSold.call();

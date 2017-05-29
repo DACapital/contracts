@@ -1,22 +1,60 @@
 var VendingMachine = artifacts.require("./VendingMachine.sol");
 var DacToken = artifacts.require("./DacToken.sol");
+var AlwaysTransfer = artifacts.require("./AlwaysTransfer.sol");
+var DacHub = artifacts.require("./DacHub.sol");
 
+function createToken(accounts){
+    let tokenContract = null;
+    let hubContract = null;
+    let alwaysTransferContract = null;
+
+    // Start by deploying the token
+    return AlwaysTransfer.new()
+    .then((alwaysTransfer) => {
+        alwaysTransferContract = alwaysTransfer;
+
+        return DacHub.deployed();
+    }).then((instance) => {
+        hubContract = instance;
+
+        return hubContract.updatePlatformContract('DAC_TRANSFER_REGULATOR', alwaysTransferContract.address, {from: accounts[0]});        
+    }).then((result) => {
+        return DacToken.deployed();
+    }).then((instance) => {
+        tokenContract = instance;
+        
+        return hubContract.updatePlatformContract('DAC_TOKEN', tokenContract.address, {from: accounts[0]});        
+    }).then((result) => {
+        return hubContract.updatePlatformContract('DAC_OWNER', accounts[1], {from: accounts[0]});        
+    }).then((result) => {
+        return tokenContract;
+    })
+}
+
+function createVendingMachine(accounts){
+    let hubContract = null;
+
+    return DacHub.deployed()
+    .then((instance) => {
+        return VendingMachine.new(instance.address, 0, {from: accounts[1]});
+    })
+}
 
 contract('FullGen1', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {           
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -32,21 +70,23 @@ contract('FullGen1', function(accounts) {
     })
 });
 
+
+
 contract('FullGen2', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {        
@@ -64,20 +104,21 @@ contract('FullGen2', function(accounts) {
 
 
 contract('FullGen3', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -96,20 +137,21 @@ contract('FullGen3', function(accounts) {
 
 
 contract('FullGen4', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -127,20 +169,21 @@ contract('FullGen4', function(accounts) {
 
 
 contract('FullGen5', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -158,20 +201,21 @@ contract('FullGen5', function(accounts) {
 
 
 contract('FullGen6', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -189,20 +233,21 @@ contract('FullGen6', function(accounts) {
 
 
 contract('FullGen7', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -220,20 +265,21 @@ contract('FullGen7', function(accounts) {
 
 
 contract('FullGen8', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -251,20 +297,21 @@ contract('FullGen8', function(accounts) {
 
 
 contract('FullGen9', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -282,20 +329,21 @@ contract('FullGen9', function(accounts) {
 
 
 contract('FullGen10', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -312,20 +360,21 @@ contract('FullGen10', function(accounts) {
 });
 
 contract('PartialGen1', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -352,20 +401,21 @@ contract('PartialGen1', function(accounts) {
 });
 
 contract('PartialGen8', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -393,20 +443,21 @@ contract('PartialGen8', function(accounts) {
 
 
 contract('FullGen10 - 1', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Buy a the generation of coins", function() {        
         
         // Start by deploying the token
-        return DacToken.deployed().then(function(instance) {
+        return createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        
@@ -424,20 +475,21 @@ contract('FullGen10 - 1', function(accounts) {
 
 
 contract('FullGen10 + 1', function(accounts) {    
-    let vmContract = null;
+    let vmContract = null;    
     let tokenContract = null;
+
 
     // Validate intitial properties set on contract    
     it("Should fail buying over limit", function(done) {        
         
         // Start by deploying the token
-        DacToken.deployed().then(function(instance) {
+        createToken(accounts)
+        .then((instance) => {
             // Save off the token contract instance
             tokenContract = instance;            
-
-            // Create the new vending machine contract with the token contract in constructor
-            return VendingMachine.new(tokenContract.address, 0, {from: accounts[1]});
-        }).then(function(instance) {
+            
+            return createVendingMachine(accounts)            
+        }).then((instance) => {     
             vmContract = instance;
             return tokenContract.transfer(vmContract.address, 16800000 * 10**18, {from: accounts[0]})
         }) .then(function(result) {                        

@@ -1,10 +1,8 @@
 var DacToken = artifacts.require("./DacToken.sol");
-var AlwaysTransfer = artifacts.require("./AlwaysTransfer.sol");
+var DacHub = artifacts.require("./DacHub.sol");
 
 module.exports = function(deployer) {  
-
-  deployer.deploy(AlwaysTransfer).then(function() {
-    return deployer.deploy(DacToken, AlwaysTransfer.address);
+  deployer.deploy(DacHub).then(function() {
+    return deployer.deploy(DacToken, DacHub.address);
   });
-
 };

@@ -7,9 +7,9 @@ import './ITransferRegulator.sol';
  */
 contract AlwaysTransfer is ITransferRegulator {
   function allowTransfer(address owner) returns (bool){
-      if(owner <= 0)
+      if(owner <= 0){
         return false;
-        
+      }
       return true;
   }
 }
