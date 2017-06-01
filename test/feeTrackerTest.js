@@ -14,7 +14,7 @@ contract('FeeTracker', function(accounts) {
         }).then(function(fee) {
 
             // Check the value
-            assert.equal(fee, 1 * 10 ** 18, "CREATE_PROPOSAL_FEE should be set to one DAC token");
+            assert.equal(fee.valueOf(), 100 * 10 ** 18, "CREATE_PROPOSAL_FEE should be set to one DAC token");
         })
     })
 

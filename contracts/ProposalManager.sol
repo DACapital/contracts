@@ -34,6 +34,11 @@ contract ProposalManager is DacHubClient {
         proposalPeriodBlockLength = _proposalPeriodBlockLength;
         commitPeriodBlockLength = _commitPeriodBlockLength;
         revealPeriodBlockLength = _revealPeriodBlockLength;
+
+        // Sanity check requirements on period lengths
+        if(proposalPeriodBlockLength <= (commitPeriodBlockLength + revealPeriodBlockLength)){
+            throw;
+        }
     }
 
     // Figure out what proposal period we are currently in.

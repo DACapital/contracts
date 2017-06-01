@@ -22,6 +22,7 @@ function mineBlock(until){
         }, (error, result) => {
             if(error !== null) return reject(error);
 
+            console.log("Mining a block...");
             return mineBlock(until).then((block) => {
                 resolve(block); 
             });
