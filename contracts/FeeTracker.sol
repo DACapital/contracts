@@ -6,11 +6,15 @@ contract FeeTracker{
     // Key/Value pairs of the fee values
     mapping (string => uint) feeList;
 
+    // Fees
+    // Fee to create a new proposal
+    string public constant CREATE_PROPOSAL_FEE = "CREATE_PROPOSAL_FEE";
+
     // Initialize the fees
     function FeeTracker(){
 
         // One hundred DAC token required to create a proposal
-        feeList["CREATE_PROPOSAL_FEE"] = 100 * 10**18;
+        feeList[CREATE_PROPOSAL_FEE] = 100 * 10**18;
     }
 
     // Get one of the platform addresses
