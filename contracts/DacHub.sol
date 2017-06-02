@@ -22,7 +22,15 @@ contract DacHub is Ownable{
             throw;
         }
 
-        return platformContracts[key];
+        // Get the address
+        address value = platformContracts[key];
+
+        // Do some sanity checks on the value
+        if ( value == 0){
+            throw;
+        }
+
+        return value;
     }
 
     // Update one of the platform addresses in the system

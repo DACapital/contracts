@@ -9,11 +9,6 @@ contract('DacHub', function(accounts) {
         return DacHub.deployed().then(function(instance) {
             hubContract = instance;
 
-            // Get non-existant
-            return hubContract.getPlatformContract.call('does_not_exist');
-        }).then(function(contractAddress) {
-            assert.equal(contractAddress, 0, "Should return 0 for unknown address");
-
             // Set to known account
             return hubContract.updatePlatformContract('master', accounts[2], {from: accounts[0]});
         }).then(function(result) {
@@ -30,5 +25,22 @@ contract('DacHub', function(accounts) {
         }).then(function(contractAddress) {
             assert.equal(contractAddress, accounts[3], "Should be updated   ");
         })
+    })
+
+    it('should fail if trying to get unknown address', (done) => {
+        let hubContract = null;
+        
+        DacHub.deployed()
+        .then(function(instance) {
+            hubContract = instance;
+
+            // Get non-existant
+            return hubContract.getPlatformContract.call('does_not_exist');
+        }).then(function(contractAddress) {           
+            done("Should have thrown error");
+        }).catch(function(error){
+            done();
+        });
+
     })
 })

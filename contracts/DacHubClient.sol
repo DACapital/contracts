@@ -15,7 +15,14 @@ contract DacHubClient{
     // This contract is responsible for allowing/disallowing DAC tokens to be transferred.
     string constant public DAC_TRANSFER_REGULATOR = "DAC_TRANSFER_REGULATOR";
 
+    // This address is the contract that holds the fee list for the DAC platform
+    string constant public DAC_FEE_TRACKER = "DAC_FEE_TRACKER";
+
     function getHubContractAddress(string key) returns (address platformContract){
         return dacHub.getPlatformContract(key);
+    }
+
+    function updatePlatformContract(string key, address platformContract){
+        return dacHub.updatePlatformContract(key, platformContract);
     }
 }
