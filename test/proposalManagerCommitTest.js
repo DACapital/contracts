@@ -57,6 +57,7 @@ contract('ProposalManagerCommit', (accounts) => {
         }).then((result) => {
             return mineBlock(startblock + 21);
         }).then((result) => {            
+            // create a buffer that represents a uint (32 bytes)
             const buf = Buffer.alloc(32);
             buf[31] = 0x02;
             let cr = crypto.createHash('sha256');
@@ -67,7 +68,8 @@ contract('ProposalManagerCommit', (accounts) => {
         }).then((result) => {
             return mineBlock(startblock + 25);            
         }).then((result) => {          
-            return proposalManager.revealVote(accounts[2], 0x02);
+            // This "2" will get converted to a 32 byte uint
+            return proposalManager.revealVote(accounts[2], 2);
         }).then((result) => {
             return mineBlock(startblock + 29);            
         })
