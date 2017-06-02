@@ -8,8 +8,6 @@ import './FeeTracker.sol';
  */
 contract ProposalManager is DacHubClient {
     
-    event debug_uint();
-    
     // Block variables
     uint public initialBock = 0;
     uint public proposalPeriodBlockLength;
@@ -19,6 +17,9 @@ contract ProposalManager is DacHubClient {
     // For every proposal, this struct will keep track of the stats for voting, etc.
     struct Proposal {
         address proposedAddress;
+        uint totalVotes;
+        uint acceptVotes;
+        uint rejectVotes;
         mapping(address => bytes32) commits;
     }
 
@@ -117,14 +118,14 @@ contract ProposalManager is DacHubClient {
         }
 
         // Save off the new proposal
-        proposals[proposalPeriod][proposedNewAddress] = Proposal(proposedNewAddress);
+        proposals[proposalPeriod][proposedNewAddress] = Proposal(proposedNewAddress, 0, 0, 0);
     }
 
     // Commit a vote against a proposal using a secret hash during a "commit" period.
     // The secret value will be a uint hashed with sha256.  Only the hash is passed in.
     // A "even" number that was hashed is an "accept" vote and an "odd" number is "reject".
     // The vote will be revealed later during the "reveal" period.
-    function commitVote(address proposedNewAddress, bytes32 commitHash){        
+    function commitVote(address proposedNewAddress, bytes32 commitHash){               
 
         // Ensure the user has DAC tokens
         ERC20 token = ERC20(getHubContractAddress(DAC_TOKEN));
@@ -153,5 +154,52 @@ contract ProposalManager is DacHubClient {
 
         // Save off the commit
         commitProposal.commits[msg.sender] = commitHash;
+    }
+
+    // Reveal a vote against a previous commitment during a commit phase.
+    // The revealed vote will need to hash via sha256 to the commit in order to be counted.
+    // Even revealed votes will count as "accept" votes and odd will count as "reject"
+    function revealVote(address proposedNewAddress, uint revealedVote){ 
+        // Ensure the user has DAC tokens
+        ERC20 token = ERC20(getHubContractAddress(DAC_TOKEN));
+        uint balance = token.balanceOf(msg.sender);
+        if(balance == 0){
+            throw;
+        }
+        
+        // Get the reveal period that is currently underway and validate we are in a good time window
+        uint revealPeriod = getRevealPeriodNumber(block.number, initialBock); 
+        if(revealPeriod == 0){
+            throw;
+        }
+
+       // Get the proposal that the user wants to reveal against and verify it exists
+        Proposal revealProposal = proposals[revealPeriod][proposedNewAddress];
+        if(revealProposal.proposedAddress == 0){
+            throw;
+        }
+        
+        // Get the commitment and verify it exists
+        bytes32 commitHash = revealProposal.commits[msg.sender];
+        if(commitHash == 0){
+            throw;
+        }
+
+        
+        // Verify the vote matches the hash
+        if(sha256(revealedVote) != commitHash){
+            throw;
+        }
+        
+        // Wipe the existing commit
+        revealProposal.commits[msg.sender] = 0;
+
+        // Count up the vote weight according to balance
+        revealProposal.totalVotes += balance;
+        if(revealedVote % 2 == 0){
+            revealProposal.acceptVotes += balance;
+        } else {
+            revealProposal.rejectVotes += balance;
+        }
     }
 }

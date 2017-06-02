@@ -1,9 +1,9 @@
 var DacToken = artifacts.require("./DacToken.sol");
 var AlwaysTransfer = artifacts.require("./AlwaysTransfer.sol");
 var DacHub = artifacts.require("./DacHub.sol");
-var ProposalManager = artifacts.require("./ProposalManager.sol");
-var sha256 = require('js-sha256').sha256;
+var ProposalManager = artifacts.require("./ProposalManager.sol");   
 var FeeTracker = artifacts.require("./FeeTracker.sol");
+var crypto = require('crypto');
 
 var mineBlock = require('./miner.js').mineBlock;
 
@@ -17,7 +17,7 @@ contract('ProposalManagerCommit', (accounts) => {
     // Validate intitial properties set on contract    
     it("should succeed", () => {        
 
-        let startblock = 0;
+        let startblock = 0;        
         
         // Start by deploying the token
         return AlwaysTransfer.new()
@@ -45,7 +45,8 @@ contract('ProposalManagerCommit', (accounts) => {
             return hubContract.updatePlatformContract('DAC_FEE_TRACKER', feeTracker.address, {from: accounts[0]});        
         }).then((result) => {
             startblock = web3.eth.blockNumber;
-            return ProposalManager.new(hubContract.address, 10, 4, 4);
+            console.log(startblock)
+            return ProposalManager.new(hubContract.address, 20, 4, 4);
         }).then((manager) => {
             proposalManager = manager;  
             return tokenContract.approve(proposalManager.address, 100 * 10**18);
@@ -54,9 +55,21 @@ contract('ProposalManagerCommit', (accounts) => {
             // Create a proposal with a dummy account
             return proposalManager.createHubFeeUpdateProposal(accounts[2])
         }).then((result) => {
-            return mineBlock(startblock + 11);
+            return mineBlock(startblock + 21);
+        }).then((result) => {            
+            const buf = Buffer.alloc(32);
+            buf[31] = 0x02;
+            let cr = crypto.createHash('sha256');
+            let update = cr.update(buf)
+            let hash = update.digest();
+            let num = web3.toBigNumber( '0x' + hash.toString('hex'));
+            return proposalManager.commitVote(accounts[2], num );
         }).then((result) => {
-            return proposalManager.commitVote(accounts[2], sha256.hex([2]));
+            return mineBlock(startblock + 25);            
+        }).then((result) => {          
+            return proposalManager.revealVote(accounts[2], 0x02);
+        }).then((result) => {
+            return mineBlock(startblock + 29);            
         })
     })
 
