@@ -20,11 +20,27 @@ contract ProposalManager is DacHubClient {
         uint totalVotes;
         uint acceptVotes;
         uint rejectVotes;
-        mapping(address => bytes32) commits;
-    }
+        bool finalized;
+        bool accepted;
+        mapping(address => bytes32) commits;       
+        mapping(address => uint) acceptVoteWeights;
+        mapping(address => uint) rejectVoteWeights;
+    }    
 
     // Mapping of proposal period to proposed addresses to Proposal structs
     mapping(uint => mapping(address => Proposal)) proposals;
+
+    // For every proposal period, this struct will keep track of the counts of proposals and the winning proposal
+    struct ProposalPeriod {
+        uint totalProposals;
+        uint finalizedProposals;        
+        address winningProposal;
+        uint winningProposalAcceptVotes;
+        bool activated;
+    }
+
+    // Mapping of proposal period id to ProposalPeriod Structs
+    mapping(uint => ProposalPeriod) proposalPeriods;
     
     // Initialize the contract
     function ProposalManager(DacHub _dacHub, uint _proposalPeriodBlockLength, uint _commitPeriodBlockLength, uint _revealPeriodBlockLength){
@@ -93,6 +109,29 @@ contract ProposalManager is DacHubClient {
         return currentProposalPeriod -1;
     }
 
+    // Figure out what is the latest period can be finalized.
+    // A proposal period that can be finalized is one that has ended and the associated commit/reveal periods have also ended.
+    function getLatestFinalizePeriod(uint currentBlock, uint startBlock) returns (uint) {
+
+        // First, get the proposal period we are in.
+        uint currentProposalPeriod = getProposalPeriodNumber(currentBlock, startBlock);
+
+        // Get the block where the current period started
+        uint currentProposalPeriodStart = (startBlock) + ((currentProposalPeriod -1 ) * proposalPeriodBlockLength);
+
+        // Get the end block of the current proposal period voting (after commit and reveals)
+        uint currentVotingEnds = currentProposalPeriodStart + commitPeriodBlockLength + revealPeriodBlockLength;
+
+        // If we are after the current proposal period voting, then we can finalize this period
+        if(currentBlock > currentVotingEnds){
+            return currentProposalPeriod;
+        }
+
+        // We are not after the current proposal voting period, so we can finalize the previous period
+        return currentProposalPeriod - 1;
+
+    }
+
     // This proposal will update the Fee Address in the plarform once it is accepted.
     // The user needs to allow this contract to withdraw the DAC Fee from their balance.
     // If it passes checks, a proposal will be created in this proposal period that can be voted on once the next commit period starts.
@@ -118,7 +157,10 @@ contract ProposalManager is DacHubClient {
         }
 
         // Save off the new proposal
-        proposals[proposalPeriod][proposedNewAddress] = Proposal(proposedNewAddress, 0, 0, 0);
+        proposals[proposalPeriod][proposedNewAddress] = Proposal(proposedNewAddress, 0, 0, 0, false, false);
+
+        // Update the proposal period number of proposals
+        proposalPeriods[proposalPeriod].totalProposals += 1;
     }
 
     // Commit a vote against a proposal using a secret hash during a "commit" period.
@@ -201,5 +243,122 @@ contract ProposalManager is DacHubClient {
         } else {
             revealProposal.rejectVotes += balance;
         }
+    }
+
+    // A proposal can be accepted if it has more than 20% of the DAC supply voting and a majority have voted "accept".    
+    function isProposalAccepted(Proposal proposal) internal returns (bool){
+
+        // Check total vote count
+        if(proposal.totalVotes < 4200000 * 10**18){
+            return false;
+        }
+
+        // Check for majority
+        if(proposal.acceptVotes < proposal.rejectVotes){
+            return false;
+        }
+
+        // Accepted
+        return true;
+    }
+
+    // This function will finalize a proposal to accept or reject.
+    // For a proposal to finalize to accept, it must have more than 20% of all DAC tokens voting and a majority accept vote.
+    // The action to take for a finalized accept vote is done in a later step "activate proposal" once all proposals are finalized for a voting period.
+    // Any proposals can be finalized that are from a previous proposal period where commit/reveal periods have ended.
+    function finalizeProposal(uint period, address proposedNewAddress){
+
+        // Check to make sure the period we are finalizing against is valid
+        uint latestFinalizePeriod = getLatestFinalizePeriod(block.number, initialBock);
+        if(period > latestFinalizePeriod){
+            throw;
+        }
+
+        // Get the proposal and check that it exists
+        Proposal finalizeProposal = proposals[period][proposedNewAddress];
+        if(finalizeProposal.proposedAddress == 0){
+            throw;
+        }
+
+        // Check to make sure the proposal is not already finalized
+        if(finalizeProposal.finalized){
+            throw;
+        }
+
+        // Update the proposal outcome and mark it as finalized
+        finalizeProposal.accepted = isProposalAccepted(finalizeProposal);
+        finalizeProposal.finalized = true;        
+
+        // Update the count of proposals that have been finalized for this period
+        proposalPeriods[period].finalizedProposals += 1;
+
+        // If this proposal was accepted and it has the highest vote count, then keep track of it in the proposal periods as the winner
+        if( finalizeProposal.accepted && finalizeProposal.acceptVotes > proposalPeriods[period].winningProposalAcceptVotes ){
+            proposalPeriods[period].winningProposal = proposedNewAddress;
+            proposalPeriods[period].winningProposalAcceptVotes = finalizeProposal.acceptVotes;
+        }
+    }
+
+    // Activate a proposal after all proposals have been finalized
+    function activateProposal(uint period){
+
+        // Check to make sure the period we are activating against is valid
+        uint latestFinalizePeriod = getLatestFinalizePeriod(block.number, initialBock);
+        if(period > latestFinalizePeriod){
+            throw;
+        }
+
+        // Check to see if this period has already been activated
+        if(proposalPeriods[period].activated){
+            throw;
+        }
+
+        // Check to see if all proposals have been finalized
+        if(proposalPeriods[period].finalizedProposals < proposalPeriods[period].totalProposals){
+            throw;
+        }
+
+        // Mark the current proposal period as activated
+        proposalPeriods[period].activated = true;
+
+        // Activate the new address in the hub
+        updatePlatformContract(DAC_FEE_TRACKER, proposalPeriods[period].winningProposal);
+    }
+
+
+    // Allow DAC withdraw for voting users of finalized proposals
+    // If they voted with the majority, then they should be entitled to the share of the fee
+    function withdrawReward(uint period, address proposalAddress){
+
+        // Get the proposal to withrdraw from and verify it has been finalized
+        Proposal withdrawProposal = proposals[period][proposalAddress];
+        if(!withdrawProposal.finalized){
+            throw;
+        }
+
+        // Get the amount of votes the current user voted with
+        uint votedAmount = 0;
+        if(withdrawProposal.accepted){
+            // Save off the amount
+            votedAmount = withdrawProposal.acceptVoteWeights[msg.sender];
+
+            // Wipe out their balance
+            withdrawProposal.acceptVoteWeights[msg.sender] = 0;
+        } else {
+            // Save off the amount
+            votedAmount = withdrawProposal.rejectVoteWeights[msg.sender];
+            
+            // Wipe out their balance
+            withdrawProposal.rejectVoteWeights[msg.sender] = 0;
+        }
+
+        // Check to make sure they have a valid value to vote for
+        if(votedAmount == 0){
+            throw;
+        }
+
+        // Process the withdraw
+        ERC20 token = ERC20(getHubContractAddress(DAC_TOKEN));
+        token.transfer(msg.sender, votedAmount);
     }
 }
