@@ -2,11 +2,11 @@ pragma solidity ^0.4.8;
 import "./zeppelin/token/ERC20.sol";
 import './DacHubClient.sol';
 import './FeeTracker.sol';
-
+import './ITransferRegulator.sol';
 /*
- * Transfer regulator that always returns false
+ * 
  */
-contract ProposalManager is DacHubClient {
+contract ProposalManager is DacHubClient, ITransferRegulator {
     
     // Block variables
     uint public initialBock = 0;
@@ -41,6 +41,9 @@ contract ProposalManager is DacHubClient {
 
     // Mapping of proposal period id to ProposalPeriod Structs
     mapping(uint => ProposalPeriod) proposalPeriods;
+
+    // Mapping of commits in each period for each address
+    mapping(uint => mapping(address => uint)) commitCounts;
     
     // Initialize the contract
     function ProposalManager(DacHub _dacHub, uint _proposalPeriodBlockLength, uint _commitPeriodBlockLength, uint _revealPeriodBlockLength){
@@ -196,6 +199,44 @@ contract ProposalManager is DacHubClient {
 
         // Save off the commit
         commitProposal.commits[msg.sender] = commitHash;
+
+        // Update the commit count for this address
+        commitCounts[commitPeriod][msg.sender] += 1;
+    }
+
+    // If a user has a previous commit, they can cancel it as long as the commit period has not ended
+    function cancelCommit(address proposedNewAddress){
+
+        // Ensure the user has DAC tokens
+        ERC20 token = ERC20(getHubContractAddress(DAC_TOKEN));
+        uint balance = token.balanceOf(msg.sender);
+        if(balance == 0){
+            throw;
+        }
+
+        // Get the commit period that is currently underway and validate we are in a good time window
+        uint commitPeriod = getCommitPeriodNumber(block.number, initialBock); 
+        if(commitPeriod == 0){
+            throw;
+        }
+
+        // Get the proposal that the user wants to commit against and verify it exists
+        Proposal commitProposal = proposals[commitPeriod][proposedNewAddress];
+        if(commitProposal.proposedAddress == 0){
+            throw;
+        }
+
+        // Next, make sure they have a commit against the proposal
+        bytes32 existingCommit = commitProposal.commits[msg.sender];
+        if(existingCommit == 0){
+            throw;
+        }
+
+        // Wipe out the commit
+        commitProposal.commits[msg.sender] = 0;
+
+        // Update the commit count for this address
+        commitCounts[commitPeriod][msg.sender] -= 1;
     }
 
     // Reveal a vote against a previous commitment during a commit phase.
@@ -239,10 +280,21 @@ contract ProposalManager is DacHubClient {
         // Count up the vote weight according to balance
         revealProposal.totalVotes += balance;
         if(revealedVote % 2 == 0){
+            // Add to the votes accepting the proposal
             revealProposal.acceptVotes += balance;
+
+            // Save off the vote for this user so they can withdraw any reward later
+            revealProposal.acceptVoteWeights[msg.sender] = balance;
         } else {
+            // Add to the votes rejecting the proposal
             revealProposal.rejectVotes += balance;
+
+            // Save off the vote for this user so they can withdraw any reward later
+            revealProposal.rejectVoteWeights[msg.sender] = balance;
         }
+
+        // Update the commit count for this address
+        commitCounts[revealPeriod][msg.sender] -= 1;
     }
 
     // A proposal can be accepted if it has more than 20% of the DAC supply voting and a majority have voted "accept".    
@@ -360,5 +412,33 @@ contract ProposalManager is DacHubClient {
         // Process the withdraw
         ERC20 token = ERC20(getHubContractAddress(DAC_TOKEN));
         token.transfer(msg.sender, votedAmount);
+    }
+
+    // Block DAC token transfers for addresses that have outstanding commits for a voting period.
+    // This should only block transfers during a commit period or a reveal period.
+    // If a user is blocked from transferring tokens, they should cancel their commit or reveal their vote 
+    // - if they are blocked from revealing (lost vote number?) they will have to wait until the reveal period is over
+    function allowTransfer(address owner) returns (bool){
+        // First check if we are in a commit period
+        uint period = getCommitPeriodNumber(block.number, initialBock); 
+
+        // If we are not in a commit period, see if we are in a reveal period
+        if(period == 0){
+            period = getRevealPeriodNumber(block.number, initialBock);  
+        }
+
+        // If not in a commit period or reveal period, allow the transfer
+        if(period == 0){
+            return true;
+        }
+
+        // Check to see if there is an active commit against this address for the period we are in.
+        if(commitCounts[period][owner] > 0){
+            // Active commmit found, block the transer
+            return false;
+        }
+
+        // No commits found, allow the transfer
+        return true;
     }
 }
