@@ -83,7 +83,7 @@ contract Fund is StandardToken, DacHubClient {
         // Check to see if it already exists
         if(incomingAsset.tokenContract == 0){
             // If it doesn't exist, create a new one
-            assetTokens[tokenContract] = new Asset(tokenContract, symbol, balance);
+            assetTokens[tokenContract] = Asset(tokenContract, symbol, balance);
         } else {
             // It already exists, so just update the balance
             assetTokens[tokenContract].balance += balance;
@@ -91,6 +91,9 @@ contract Fund is StandardToken, DacHubClient {
 
         // Transfer in the token
         ERC20 token = ERC20(tokenContract);
-        token.transferFrom(msg.sender, this, proposalFee);
+        token.transferFrom(msg.sender, this, balance);
     }
+
+    // TODO: allow users to withdraw when fund is closed.  Allow rebalance.
+
 }

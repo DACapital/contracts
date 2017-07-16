@@ -1,0 +1,131 @@
+{
+  "contract_name": "ProposalVote",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "votingStartsBlock",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "threshold",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "tokenContract",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "noVotes",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "votingYes",
+          "type": "bool"
+        }
+      ],
+      "name": "CastVote",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "GetOutcome",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "votingEndsBlock",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "yesVotes",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_tokenContract",
+          "type": "address"
+        },
+        {
+          "name": "_votingEndsBlock",
+          "type": "uint256"
+        },
+        {
+          "name": "_threshold",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "constructor"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b6040516060806103848339810160409081528151602083015191909201515b60008054600160a060020a031916600160a060020a0385161790554360058190556006839055821161005d5760006000fd5b60048190555b5050505b61030e806100766000396000f300606060405236156100725763ffffffff60e060020a6000350416631aecba9d811461007457806342cde4e81461009657806355a373d6146100b8578063b5b47f42146100e4578063bfcdca4814610106578063cdcf76df1461011d578063ef360ddc14610141578063fb286c6514610163575bfe5b341561007c57fe5b610084610185565b60408051918252519081900360200190f35b341561009e57fe5b61008461018b565b60408051918252519081900360200190f35b34156100c057fe5b6100c8610191565b60408051600160a060020a039092168252519081900360200190f35b34156100ec57fe5b6100846101a0565b60408051918252519081900360200190f35b341561010e57fe5b61011b60043515156101a6565b005b341561012557fe5b61012d6102a0565b604080519115158252519081900360200190f35b341561014957fe5b6100846102d6565b60408051918252519081900360200190f35b341561016b57fe5b6100846102dc565b60408051918252519081900360200190f35b60055481565b60045481565b600054600160a060020a031681565b60035481565b60065460009043106101b85760006000fd5b600160a060020a03331660009081526001602052604090205460ff16156101df5760006000fd5b60008054604080516020908101849052815160e060020a6370a08231028152600160a060020a033381166004830152925192909316936370a082319360248082019492918390030190829087803b151561023557fe5b6102c65a03f1151561024357fe5b5050604051519150508015156102595760006000fd5b600160a060020a0333166000908152600160208190526040909120805460ff19169091179055811561029257600280548201905561029b565b60038054820190555b5b5050565b60065460009043116102b25760006000fd5b6004546003546002540110156102ca575060006102d3565b50600354600254115b90565b60065481565b600254815600a165627a7a723058203a02a538f5dd7de45e2c06dddb154542db373387a8ad312289270c06bea52ab70029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1500187379873
+}

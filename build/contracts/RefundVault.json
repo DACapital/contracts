@@ -1,0 +1,160 @@
+{
+  "contract_name": "RefundVault",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "close",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "wallet",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "enableRefunds",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "state",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "deposited",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "deposit",
+      "outputs": [],
+      "payable": true,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "investor",
+          "type": "address"
+        }
+      ],
+      "name": "refund",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "name": "_wallet",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "Closed",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [],
+      "name": "RefundsEnabled",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "beneficiary",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "weiAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "Refunded",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b6040516020806105ac83398101604052515b5b60008054600160a060020a03191633600160a060020a03161790555b600160a060020a03811615156100515760006000fd5b60028054600160a060020a031916600160a060020a038316178082556000919060a060020a60ff02191674010000000000000000000000000000000000000000835b02179055505b505b610502806100aa6000396000f3006060604052361561007d5763ffffffff60e060020a60003504166343d726d6811461007f578063521eb273146100915780638c52dc41146100bd5780638da5cb5b146100cf578063c19d93fb146100fb578063cb13cddb1461012f578063f2fde38b1461015d578063f340fa011461017b578063fa89401a14610191575bfe5b341561008757fe5b61008f6101af565b005b341561009957fe5b6100a161026c565b60408051600160a060020a039092168252519081900360200190f35b34156100c557fe5b61008f61027b565b005b34156100d757fe5b6100a1610308565b60408051600160a060020a039092168252519081900360200190f35b341561010357fe5b61010b610317565b6040518082600281111561011b57fe5b60ff16815260200191505060405180910390f35b341561013757fe5b61014b600160a060020a0360043516610327565b60408051918252519081900360200190f35b341561016557fe5b61008f600160a060020a0360043516610339565b005b61008f600160a060020a0360043516610385565b005b341561019957fe5b61008f600160a060020a036004351661040e565b005b60005433600160a060020a039081169116146101cb5760006000fd5b60005b6002805460a060020a900460ff16908111156101e657fe5b146101f15760006000fd5b60028054819060a060020a60ff02191660a060020a825b02179055506040517f1cdde67b72a90f19919ac732a437ac2f7a10fc128d28c2a6e525d89ce5cd9d3a90600090a1600254604051600160a060020a039182169130163180156108fc02916000818181858888f19350505050151561026857fe5b5b5b565b600254600160a060020a031681565b60005433600160a060020a039081169116146102975760006000fd5b60005b6002805460a060020a900460ff16908111156102b257fe5b146102bd5760006000fd5b600280546001919060a060020a60ff02191660a060020a835b02179055506040517f599d8e5a83cffb867d051598c4d70e805d59802d8081c1c7d6dffc5b6aca2b8990600090a15b5b565b600054600160a060020a031681565b60025460a060020a900460ff1681565b60016020526000908152604090205481565b60005433600160a060020a039081169116146103555760006000fd5b600160a060020a038116156103805760008054600160a060020a031916600160a060020a0383161790555b5b5b50565b60005433600160a060020a039081169116146103a15760006000fd5b60005b6002805460a060020a900460ff16908111156103bc57fe5b146103c75760006000fd5b600160a060020a0381166000908152600160205260409020546103f0903463ffffffff6104bc16565b600160a060020a0382166000908152600160205260409020555b5b50565b600060015b6002805460a060020a900460ff169081111561042b57fe5b146104365760006000fd5b50600160a060020a038116600081815260016020526040808220805490839055905190929183156108fc02918491818181858888f19350505050151561047857fe5b604080518281529051600160a060020a038416917fd7dee2702d63ad89917b6a4da9981c90c4d24f8c2bdfd64c604ecae57d8d0651919081900360200190a25b5050565b6000828201838110156104cb57fe5b8091505b50929150505600a165627a7a72305820c1639a7fc2d09d1493473e371138c6c715a8408babf69a85a0f9cfff767f316f0029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1500187379873
+}

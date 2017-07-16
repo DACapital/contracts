@@ -9,6 +9,8 @@ import './DacHubClient.sol';
 // As more purchases are made the Generation gets incremented.
 // Each generation will sell the tokens for twice as much as the previous generation.
 contract VendingMachine is DacHubClient {
+
+    event Purchase(uint amount, address buyer);
     
     // Total amount of tokens that have been sold so far.  Starts at 0.
     uint public amountSold = 0;
@@ -40,8 +42,9 @@ contract VendingMachine is DacHubClient {
         startBlock = start;
     }
 
-    // This function will calculate how many tokens they will get with the amount of ETH they are sending in
-    function calculateSaleAmount(uint amountSoldStart, uint ethAmount) returns (uint) {
+    // This function will calculate how many tokens a purchaser will get with the amount of ETH they are send in.
+    // The price and amount will depend on how many tokens have already been sold.
+    function calculateSaleAmount(uint amountSoldStart, uint ethAmount) constant returns (uint) {
 
         // Keep track of the amount to sell in this transaction
         uint currentAmountToSell = 0;
@@ -111,6 +114,8 @@ contract VendingMachine is DacHubClient {
         // Send the tokens to the buyers's account
         token.transfer(msg.sender, amountPurchased);
 
+        // Trigger the Purchase event
+        Purchase(amountPurchased, msg.sender);
     }
 
     // This function allows the owner to withdraw any ETH that was sent in via purchases.

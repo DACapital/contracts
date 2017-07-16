@@ -1,5 +1,6 @@
 pragma solidity ^0.4.10;
 import "./zeppelin/ownership/Ownable.sol";
+import "./zeppelin/token/ERC20.sol";
 
 contract StandaloneFund is Ownable{    
     
@@ -26,7 +27,7 @@ contract StandaloneFund is Ownable{
     // Allow someone to purchase the fund.  Send current owner the ETH and assign ownership
     function Purchase() payable {
         // Ensure this fund is currently for sale
-        require(forSale);
+        require(isForSale);
 
         // Ensure the value sent in is greater or equal to the required price
         require(msg.value >= salePrice);

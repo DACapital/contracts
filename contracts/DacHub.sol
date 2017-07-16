@@ -1,4 +1,4 @@
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.11;
 import "./zeppelin/ownership/Ownable.sol";
 
 // This Hub contract is just a holder on the blockchain that other contracs can reference to know
@@ -6,6 +6,9 @@ import "./zeppelin/ownership/Ownable.sol";
 // as time goes by and new versions of the contracts are rolled out.  This is the source of truth for
 // the platform.
 contract DacHub is Ownable{
+
+    event ContractUpdated(string key, address platformContract);
+    event ContractRetrieved(string key, address platformContract);
 
     // Key/Value pairs of all the contracts on the platform
     mapping (string => address) platformContracts;
@@ -15,7 +18,7 @@ contract DacHub is Ownable{
     }
 
     // Get one of the platform addresses
-    function getPlatformContract(string key) returns (address platformContract) {
+    function getPlatformContract(string key) constant returns (address platformContract) {
 
         // Do some sanity checks on the key
         if( bytes(key).length == 0 ) {
@@ -29,6 +32,8 @@ contract DacHub is Ownable{
         if ( value == 0){
             throw;
         }
+
+        ContractRetrieved(key, value);
 
         return value;
     }
@@ -45,6 +50,8 @@ contract DacHub is Ownable{
         if ( value == 0){
             throw;
         }
+
+        ContractUpdated(key, value);
 
         // Update the contract
         platformContracts[key] = value;

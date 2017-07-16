@@ -1,0 +1,151 @@
+{
+  "contract_name": "DacHub",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "key",
+          "type": "string"
+        }
+      ],
+      "name": "getPlatformContract",
+      "outputs": [
+        {
+          "name": "platformContract",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "type": "address"
+        }
+      ],
+      "name": "updatePlatformContract",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "platformContract",
+          "type": "address"
+        }
+      ],
+      "name": "ContractUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "name": "platformContract",
+          "type": "address"
+        }
+      ],
+      "name": "ContractRetrieved",
+      "type": "event"
+    }
+  ],
+  "unlinked_binary": "0x6060604052341561000c57fe5b5b5b60008054600160a060020a03191633600160a060020a03161790555b5b5b6104c38061003b6000396000f300606060405263ffffffff60e060020a6000350416638da5cb5b8114610042578063dd391e591461006e578063f2fde38b146100e0578063f72717bc146100fe575bfe5b341561004a57fe5b610052610161565b60408051600160a060020a039092168252519081900360200190f35b341561007657fe5b610052600480803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284375094965061017095505050505050565b60408051600160a060020a039092168252519081900360200190f35b34156100e857fe5b6100fc600160a060020a03600435166102c6565b005b341561010657fe5b6100fc600480803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284375094965050509235600160a060020a03169250610312915050565b005b600054600160a060020a031681565b600060008251600014156101845760006000fd5b6001836040518082805190602001908083835b602083106101b65780518252601f199092019160209182019101610197565b51815160209384036101000a6000190180199092169116179052920194855250604051938490030190922054600160a060020a0316925050508015156101fc5760006000fd5b7f6ae232c6bd199fd81a9ede00c4402a9d14853bb1a9e20be6b1ba5e9819e799458382604051808060200183600160a060020a0316600160a060020a03168152602001828103825284818151815260200191508051906020019080838360008314610282575b80518252602083111561028257601f199092019160209182019101610262565b505050905090810190601f1680156102ae5780820380516001836020036101000a031916815260200191505b50935050505060405180910390a18091505b50919050565b60005433600160a060020a039081169116146102e25760006000fd5b600160a060020a0381161561030d5760008054600160a060020a031916600160a060020a0383161790555b5b5b50565b60005433600160a060020a0390811691161461032e5760006000fd5b8151151561033c5760006000fd5b600160a060020a03811615156103525760006000fd5b7ff611fec7babefd259c57ea5b6006acff8140ab17bb816c65ba0aa7e36c09caa88282604051808060200183600160a060020a0316600160a060020a031681526020018281038252848181518152602001915080519060200190808383600083146103d8575b8051825260208311156103d857601f1990920191602091820191016103b8565b505050905090810190601f1680156104045780820380516001836020036101000a031916815260200191505b50935050505060405180910390a1806001836040518082805190602001908083835b602083106104455780518252601f199092019160209182019101610426565b51815160209384036101000a600019018019909216911617905292019485525060405193849003019092208054600160a060020a031916600160a060020a03949094169390931790925550505b5b50505600a165627a7a7230582014a357183be80d29b486505c5df1f681c2ba031d7fb3bff1902df4d53b2dd4fe0029",
+  "networks": {
+    "3": {
+      "events": {
+        "0xf611fec7babefd259c57ea5b6006acff8140ab17bb816c65ba0aa7e36c09caa8": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "key",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "platformContract",
+              "type": "address"
+            }
+          ],
+          "name": "ContractUpdated",
+          "type": "event"
+        },
+        "0x6ae232c6bd199fd81a9ede00c4402a9d14853bb1a9e20be6b1ba5e9819e79945": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "name": "key",
+              "type": "string"
+            },
+            {
+              "indexed": false,
+              "name": "platformContract",
+              "type": "address"
+            }
+          ],
+          "name": "ContractRetrieved",
+          "type": "event"
+        }
+      },
+      "links": {},
+      "address": "0xc20278ef86c343030529621c9dea2611ba981c1b",
+      "updated_at": 1500187851862
+    }
+  },
+  "schema_version": "0.0.5",
+  "updated_at": 1500187851862
+}

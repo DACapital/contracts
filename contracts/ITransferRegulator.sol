@@ -1,4 +1,4 @@
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.8;
 
 /*
  * Transfer regulator interface.

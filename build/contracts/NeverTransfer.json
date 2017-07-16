@@ -1,0 +1,27 @@
+{
+  "contract_name": "NeverTransfer",
+  "abi": [
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "allowTransfer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    }
+  ],
+  "unlinked_binary": "0x60606040523415600b57fe5b5b609b8061001a6000396000f300606060405263ffffffff60e060020a600035041663b3490bfc81146020575bfe5b3415602757fe5b6039600160a060020a0360043516604d565b604080519115158252519081900360200190f35b6000600160a060020a038216819011606657506000606a565b5060005b9190505600a165627a7a72305820f561109cb6d013a79c7727ee370bd748c75647c81c35ca8dbb784110f40a6bb50029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1500187379873
+}

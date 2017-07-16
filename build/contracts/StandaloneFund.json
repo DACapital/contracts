@@ -1,0 +1,117 @@
+{
+  "contract_name": "StandaloneFund",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isForSale",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [],
+      "name": "Purchase",
+      "outputs": [],
+      "payable": true,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "token",
+          "type": "address"
+        },
+        {
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "WithdrawTokens",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_isForSale",
+          "type": "bool"
+        }
+      ],
+      "name": "SetForSale",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newPrice",
+          "type": "uint256"
+        }
+      ],
+      "name": "SetSalePrice",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "salePrice",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "type": "constructor"
+    }
+  ],
+  "unlinked_binary": "0x60606040526000805460a060020a60ff0219168155600155341561001f57fe5b5b5b60008054600160a060020a03191633600160a060020a03161790555b5b5b61035c8061004e6000396000f300606060405236156100725763ffffffff60e060020a60003504166320b08dc2811461007457806349c15bd914610098578063680f2e4f146100a25780638da5cb5b146100c3578063b28f57fc146100ef578063c6cbcf8c14610106578063f2fde38b1461011b578063f51f96dd14610139575bfe5b341561007c57fe5b61008461015b565b604080519115158252519081900360200190f35b6100a061016b565b005b34156100aa57fe5b6100a0600160a060020a03600435166024356101ec565b005b34156100cb57fe5b6100d361026e565b60408051600160a060020a039092168252519081900360200190f35b34156100f757fe5b6100a0600435151561027d565b005b341561010e57fe5b6100a06004356102b8565b005b341561012357fe5b6100a0600160a060020a03600435166102de565b005b341561014157fe5b61014961032a565b60408051918252519081900360200190f35b60005460a060020a900460ff1681565b60005460a060020a900460ff1615156101845760006000fd5b6001543410156101945760006000fd5b60008054604051600160a060020a03909116913480156108fc02929091818181858888f1935050505015156101c95760006000fd5b600060018190558054600160a860020a03191633600160a060020a03161790555b565b60005433600160a060020a039081169116146102085760006000fd5b600080546040805160e060020a63a9059cbb028152600160a060020a0392831660048201526024810185905290519185169263a9059cbb9260448084019382900301818387803b151561025757fe5b6102c65a03f1151561026557fe5b5050505b5b5050565b600054600160a060020a031681565b60005433600160a060020a039081169116146102995760006000fd5b6000805460a060020a60ff02191660a060020a831515021790555b5b50565b60005433600160a060020a039081169116146102d45760006000fd5b60018190555b5b50565b60005433600160a060020a039081169116146102fa5760006000fd5b600160a060020a038116156102b45760008054600160a060020a031916600160a060020a0383161790555b5b5b50565b600154815600a165627a7a723058206011e936bfe5298c0f5814b4cd22afe6a250f0e89b4a31266755bfac7c5625610029",
+  "networks": {},
+  "schema_version": "0.0.5",
+  "updated_at": 1500187379873
+}
