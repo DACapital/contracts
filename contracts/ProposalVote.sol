@@ -90,7 +90,7 @@ contract ProposalVote {
 		}
 
 		// Ensure a quorum was reached by having a minimum number of votes over the threshold
-		if( yesVotes + noVotes < threshold){
+		if( yesVotes + noVotes < threshold ){
 
 			// Not enough votes were cast to allow this to be finalized to "true"
 			return false;
